@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${deal.id == null} ? 'Создание сделки' : 'Редактирование сделки'">Сделка</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<div th:replace="~{/include/header}"></div>
+
+<main class="flex-grow-1">
+    <div class="container mt-5">
+        <h1 th:text="${deal.id == null} ? 'Добавить сделку' : 'Редактировать сделку'"></h1>
+
+        <form th:action="@{/deal/save}" th:object="${deal}" method="post" novalidate>
+            <input type="hidden" th:field="*{id}" />
+            <!-- Недвижимость -->
+            <div class="mb-3">
+                <label for="realtySelect" class="form-label">Недвижимость</label>
+                <select th:field="*{realty.id}" class="form-select" id="realtySelect" onchange="updateRealtyFields()" required>
+                    <option value="" disabled th:selected="*{realty == null}">-- Выберите недвижимость --</option>
+                    <option th:each="realty : ${realties}"
+                            th:value="${realty.id}"
+                            th:text="${realty.region + ', ' + realty.locality + ', ' + realty.street}">
+                    </option>
+                </select>
+                <div class="invalid-feedback">Пожалуйста, выберите недвижимость.</div>
+            </div>
+
+            <!-- Владелец -->
+            <div class="mb-3">
+                <label for="ownerField" class="form-label">Владелец</label>
+                <input type="text" id="ownerField" class="form-control" readonly />
+            </div>
+
+            <!-- Сумма -->
+            <div class="mb-3">
+                <label for="amountField" class="form-label">Сумма (₽)</label>
+                <input type="text" th:field="*{amount}" id="amountField" class="form-control" readonly />
+            </div>
+
+            <!-- Клиент -->
+            <div class="mb-3">
+                <label for="clientSelect" class="form-label">Клиент</label>
+                <select th:field="*{client.id}" class="form-select" id="clientSelect" onchange="updateClientFields()" required>
+                    <option value="" disabled th:selected="*{client == null}">-- Выберите клиента --</option>
+                    <option th:each="client : ${clients}"
+                            th:value="${client.id}"
+                            th:text="${client.fullName}">
+                    </option>
+                </select>
+                <div class="invalid-feedback">Пожалуйста, выберите клиента.</div>
+            </div>
+
+            <!-- Телефон клиента -->
+            <div class="mb-3">
+                <label for="clientNumberField" class="form-label">Телефон клиента</label>
+                <input type="text" id="clientNumberField" class="form-control" readonly />
+            </div>
+
+            <!-- Скрытое поле для телефона клиента -->
+            <input type="hidden" th:field="*{number}" />
+
+            <!-- Сотрудник -->
+            <div class="mb-3">
+                <label for="employeeSelect" class="form-label">Сотрудник</label>
+                <select th:field="*{employee.id}" class="form-select" id="employeeSelect" required>
+                    <option value="" disabled th:selected="*{employee == null}">-- Выберите сотрудника --</option>
+                    <option th:each="employee : ${employees}"
+                            th:value="${employee.id}"
+                            th:text="${employee.lastName + ' ' + employee.firstName + ' (' + employee.position + ')'}">
+                    </option>
+                </select>
+                <div class="invalid-feedback">Пожалуйста, выберите сотрудника.</div>
+            </div>
+
+            <!-- Дата -->
+            <div class="mb-3">
+                <label for="dateField" class="form-label">Дата сделки</label>
+                <input type="datetime-local" th:field="*{date}" id="dateField" class="form-control" required />
+                <div class="invalid-feedback">Пожалуйста, укажите дату сделки.</div>
+            </div>
+
+            <!-- Статус -->
+            <div class="mb-3">
+                <label for="statusField" class="form-label">Статус</label>
+                <input type="text" th:field="*{status}" id="statusField" class="form-control" required />
+                <div class="invalid-feedback">Пожалуйста, укажите статус сделки.</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <a th:href="@{/deal}" class="btn btn-secondary ms-2">Отмена</a>
+        </form>
+    </div>
+</main>
+
+<!-- JSON данные -->
+<div id="realtyJson" th:attr="data-json=${realtyJson}" hidden></div>
+<div id="clientJson" th:attr="data-json=${clientJson}" hidden></div>
+
+<script>
+    function updateRealtyFields() {
+        const realtyElement = document.getElementById("realtyJson");
+        const data = realtyElement ? realtyElement.dataset.json : "[]";
+        const realtyData = JSON.parse(data || "[]");
+        const selectedId = document.getElementById("realtySelect").value;
+        const realty = realtyData.find(r => r.id == selectedId);
+        document.getElementById("ownerField").value = realty?.ownerName || "";
+        document.getElementById("amountField").value = realty?.cost || "";
+    }
+
+    function updateClientFields() {
+        const clientElement = document.getElementById("clientJson");
+        const data = clientElement ? clientElement.dataset.json : "[]";
+        const clientData = JSON.parse(data || "[]");
+        const selectedId = document.getElementById("clientSelect").value;
+        const client = clientData.find(c => c.id == selectedId);
+        document.getElementById("clientNumberField").value = client?.phone || "";
+        document.querySelector("[name='number']").value = client?.phone || "";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        updateRealtyFields();
+        updateClientFields();
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+</html>
