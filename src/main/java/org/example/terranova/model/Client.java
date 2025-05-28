@@ -25,8 +25,8 @@ public class Client {
     private String license;
 
     // Связь OneToOne с User — владелец клиента
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = true) // Устанавливаем optional = true
+    @JoinColumn(name = "user_id", unique = true, nullable = true) // Устанавливаем nullable = true
     private User user;
 
     // Вспомогательный метод для отображения полного имени клиента
