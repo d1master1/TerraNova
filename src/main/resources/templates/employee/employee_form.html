@@ -50,9 +50,22 @@
                 <input type="text" class="form-control" id="patronymic" th:field="*{patronymic}" />
             </div>
 
+            <!-- Должность -->
             <div class="mb-3">
                 <label for="position" class="form-label">Должность:</label>
-                <input type="text" class="form-control" id="position" th:field="*{position}" required />
+                <select th:field="*{position}" id="position" class="form-control" required>
+                    <option value="Разработчик">Разработчик</option>
+                    <option value="Директор">Директор</option>
+                    <option value="Заместитель директора">Заместитель директора</option>
+                    <option value="Руководитель отдела">Руководитель отдела</option>
+                    <option value="Риелтор">Риелтор</option>
+                    <option value="Юрист">Юрист</option>
+                    <option value="Бухгалтер">Бухгалтер</option>
+                    <option value="Маркетолог">Маркетолог</option>
+                    <option value="Аналитик">Аналитик</option>
+                    <option value="Секретарь">Секретарь</option>
+                </select>
+                <div class="invalid-feedback">Выберите пожалуйста должность.</div>
             </div>
 
             <div class="mb-3">
