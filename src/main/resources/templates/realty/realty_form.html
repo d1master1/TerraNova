@@ -97,14 +97,14 @@
                         <label class="form-check-label" for="balcony">Балкон</label>
                     </div>
 
-                    <div class="mb-3">
+                    <!--<div class="mb-3">
                         <label for="client" class="form-label">Клиент:</label>
                         <select class="form-select" id="client" th:field="*{client}">
-                            <option value="">-- Выберите клиента --</option>
+                            <option value="">&#45;&#45; Выберите клиента &#45;&#45;</option>
                             <option th:each="client : ${clients}" th:value="${client.id}"
                                     th:text="${client.fullName}"></option>
                         </select>
-                    </div>
+                    </div>-->
 
                     <div class="mb-3">
                         <label for="owner" class="form-label">Владелец недвижимости:</label>
@@ -114,15 +114,14 @@
                         </select>
                     </div>
 
-                    <div class="mb-3">
+                    <!--<div class="mb-3">
                         <label for="deal" class="form-label">Сделка:</label>
                         <select class="form-select" id="deal" th:field="*{deal}">
-                            <option value="">-- Выберите сделку --</option>
+                            <option value="">&#45;&#45; Выберите сделку &#45;&#45;</option>
                             <option th:each="deal : ${deals}" th:value="${deal.id}"
                                     th:text="${deal.id} + ' — ' + deal.formattedDate + ' — ' + deal.formattedCost"></option>
                         </select>
-                    </div>
-
+                    </div>-->
 
                 </div>
                 <div class="card-footer">
